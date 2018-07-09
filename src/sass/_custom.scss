@@ -1,0 +1,38 @@
+.letter-tile {
+  padding: 100% 0 0;
+
+  span {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    line-height: 0;
+    width: 100%;
+    text-align: center;
+  }
+  font-size: 10vh;
+
+  // &.letter-tile-1-cols { font-size: calc((100vh / 1) * 0.8); }
+  // &.letter-tile-2-cols { font-size: calc((100vh / 2) * 0.8); }
+  // &.letter-tile-3-cols { font-size: calc((100vh / 3) * 0.8); }
+  // &.letter-tile-4-cols { font-size: calc((100vh / 4) * 0.8); }
+  // &.letter-tile-5-cols { font-size: calc((100vh / 5) * 0.8); }
+  // &.letter-tile-6-cols { font-size: calc((100vh / 6) * 0.8); }
+  // &.letter-tile-7-cols { font-size: calc((100vh / 7) * 0.8); }
+  // &.letter-tile-8-cols { font-size: calc((100vh / 8) * 0.8); }
+}
+#wordsearch_grid {
+  .col {
+    max-width: 90px;
+    padding: 0;
+    &:not(:last-child) {
+      border-right-width: 0 !important;
+    }
+  }
+  .row {
+    &:not(:last-child) {
+      .col {
+        border-bottom-width: 0 !important;
+      }
+    }
+  }
+}
