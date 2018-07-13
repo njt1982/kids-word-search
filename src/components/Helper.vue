@@ -1,33 +1,32 @@
 <template>
-  <div class="container mt-4">
+  <div class="container">
     <div class="row">
-      <div class="col">
-        <h1>Kids Word Search Game</h1>
-        <form class="form-inline mb-2">
-          <div class="input-group">
-            <input class="form-control"
-                   type="number"
-                   placeholder="Size"
-                   v-model="size"
-                   v-on:change="rebuildGrid"
-                   aria-label="Size">
-          </div>
-          <button type="button" class="btn btn-primary" v-on:click="rebuildGrid">Rebuild</button>
-        </form>
-      </div>
-    </div>
-    <div id="wordsearch_grid" class="container mb-4">
-      <div class="row" v-for="(_, row) in sizeInt" :key="row">
-        <div class="col border" v-for="(_, col) in sizeInt" :key="col">
-          <div :class="['letter-tile', 'letter-tile-' + sizeInt + '-cols' ]">
-            <span>{{ griVal(col, row) }}</span>
+      <div id="wordsearch_grid" class="col-md-9 m-3">
+        <div class="row" v-for="(_, row) in sizeInt" :key="row">
+          <div class="col border" v-for="(_, col) in sizeInt" :key="col">
+            <div :class="['letter-tile', isTileActive(col, row) ? 'letter-tile-selected' : '']"
+                  v-on:click="clickLetter(col, row)">
+              <svg width="100%" height="100%" viewBox="0 0 18 18">
+                <text x="50%" y="15" text-anchor="middle">{{ griVal(col, row) }}</text>
+              </svg>
+            </div>
           </div>
         </div>
       </div>
+
+      <div class="col">
+        <h2 class="mt-3">Guess</h2>
+        <pre>{{guessedWord}}</pre>
+        <button :v-if="guess.length > 0"
+                class="btn btn-sm btn-primary"
+                v-on:click="guess = []">Clear</button>
+
+        <h2>Words</h2>
+        <ul class="list-group" v-for="word in usedWords" :key="word">
+          <li class="list-group-item">{{word}}</li>
+        </ul>
+      </div>
     </div>
-    <ul v-for="word in usedWords" :key="word">
-      <li>{{word}}</li>
-    </ul>
   </div>
 </template>
 
@@ -46,6 +45,7 @@ export default {
       ],
       usedWords: [],
       letterGrid: [[]],
+      guess: [],
     };
   },
   mounted() {
@@ -55,8 +55,24 @@ export default {
     sizeInt() {
       return parseInt(this.size, 10);
     },
+    guessedWord() {
+      return this.guess.map(l => this.griVal(l.x, l.y)).join('');
+    },
   },
   methods: {
+    isTileActive(x, y) {
+      for (let i = 0; i < this.guess.length; i += 1) {
+        if (this.guess[i].x === x && this.guess[i].y === y) {
+          return true;
+        }
+      }
+      return false;
+    },
+    clickLetter(x, y) {
+      if (!this.isTileActive(x, y)) {
+        this.guess.push({ x, y });
+      }
+    },
     griVal(x, y) {
       if (typeof this.letterGrid[y] !== 'undefined') {
         if (typeof this.letterGrid[y][x] !== 'undefined') {
@@ -72,9 +88,8 @@ export default {
 
       // Build letterGrid.
       this.words.forEach((word) => {
-        console.log(word, word.length, this.sizeInt);
         if (word.length > this.sizeInt) {
-          console.error('Word wont fit on board');
+          console.error('Word wont fit on board'); // eslint-disable-line no-console
           return;
         }
         let isValid = false;
@@ -87,7 +102,7 @@ export default {
         do {
           itterationCount += 1;
           if (itterationCount > 100) {
-            console.error('Tried to write word 100 times and failed', word);
+            console.error('Tried to write word 100 times and failed', word); // eslint-disable-line no-console
             return;
           }
 
@@ -132,7 +147,7 @@ export default {
 
             isValid = true;
           } catch (err) {
-            console.log(`DEBUG: ${err.message}`, word, x, y, dx, dy);
+            console.log(`DEBUG: ${err.message}`, word, x, y, dx, dy); // eslint-disable-line no-console
             isValid = false;
           }
         } while (!isValid);
