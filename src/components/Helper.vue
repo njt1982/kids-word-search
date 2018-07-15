@@ -1,30 +1,33 @@
 <template>
   <div class="container">
-    <div class="row">
-      <div id="wordsearch_grid" class="col-md-9 m-3">
+    <div class="row mt-3">
+      <div id="wordsearch_grid" class="col-sm-9 my-1 px-4 pl-sm-5 pr-sm-3">
         <div class="row" v-for="(_, row) in sizeInt" :key="row">
-          <div class="col border" v-for="(_, col) in sizeInt" :key="col">
-            <div :class="['letter-tile', isTileActive(col, row) ? 'letter-tile-selected' : '']"
-                  v-on:click="clickLetter(col, row)">
+          <div class="col border" v-for="(_, col) in sizeInt" :key="`${row}_${col}`">
+            <div :class="letterTileClasses(col, row)"
+                  :data-x="col" :data-y="row"
+                  @mousedown.prevent="wordSelectStart"
+                  @mouseup="wordSelectUpdate"
+                  @mousemove="wordSelectUpdate"
+                  @touchstart.prevent="wordSelectStart"
+                  @touchend="wordSelectUpdate"
+                  @touchmove="wordSelectUpdate"
+                  >
               <svg width="100%" height="100%" viewBox="0 0 18 18">
-                <text x="50%" y="15" text-anchor="middle">{{ griVal(col, row) }}</text>
+                <text x="50%" y="15" text-anchor="middle">{{ gridVal(col, row) }}</text>
               </svg>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="col">
-        <h2 class="mt-3">Guess</h2>
-        <pre>{{guessedWord}}</pre>
-        <button :v-if="guess.length > 0"
-                class="btn btn-sm btn-primary"
-                v-on:click="guess = []">Clear</button>
-
+      <div class="col-sm-3">
         <h2>Words</h2>
-        <ul class="list-group" v-for="word in usedWords" :key="word">
-          <li class="list-group-item">{{word}}</li>
-        </ul>
+        <div class="words">
+          <span :class="wordListClasses(word)"
+                v-for="word in usedWords"
+                :key="word">{{word}}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -35,6 +38,7 @@ export default {
   name: 'Helper',
   data() {
     return {
+      debugEnabled: false,
       size: 8,
       words: [
         'air',
@@ -44,8 +48,14 @@ export default {
         'scared',
       ],
       usedWords: [],
+      foundWords: [],
       letterGrid: [[]],
+      foundTiles: [],
       guess: [],
+      selectedRange: {
+        start: undefined,
+        end: undefined,
+      },
     };
   },
   mounted() {
@@ -56,10 +66,17 @@ export default {
       return parseInt(this.size, 10);
     },
     guessedWord() {
-      return this.guess.map(l => this.griVal(l.x, l.y)).join('');
+      return this.guess.map(l => this.gridVal(l.x, l.y)).join('');
     },
   },
   methods: {
+    wordListClasses(word) {
+      const classes = ['badge', 'badge-pill', 'badge-primary'];
+      if (this.foundWords.indexOf(word) !== -1) {
+        classes.push('badge-success');
+      }
+      return classes;
+    },
     isTileActive(x, y) {
       for (let i = 0; i < this.guess.length; i += 1) {
         if (this.guess[i].x === x && this.guess[i].y === y) {
@@ -68,12 +85,157 @@ export default {
       }
       return false;
     },
-    clickLetter(x, y) {
-      if (!this.isTileActive(x, y)) {
-        this.guess.push({ x, y });
+    isTileHighlighted(x, y) {
+      if (this.selectedRange.start && this.selectedRange.end) {
+        const r = this.selectedRange;
+
+        const minX = Math.min(r.start.x, r.end.x);
+        const maxX = Math.max(r.start.x, r.end.x);
+        const minY = Math.min(r.start.y, r.end.y);
+        const maxY = Math.max(r.start.y, r.end.y);
+
+        if (x >= minX && x <= maxX && y >= minY && y <= maxY) {
+          // in range. If X or Y are equal then it's a straight line, otherwise
+          // Work out diagonal logic.
+          return (
+            r.start.x === r.end.x ||
+            r.start.y === r.end.y ||
+            (Math.abs(r.start.x - x) === Math.abs(r.start.y - y))
+          );
+        }
       }
+      return false;
     },
-    griVal(x, y) {
+    isTileAFoundWordTile(x, y) {
+      for (let i = 0; i < this.foundTiles.length; i += 1) {
+        if (this.foundTiles[i].x === x && this.foundTiles[i].y === y) {
+          return true;
+        }
+      }
+      return false;
+    },
+    letterTileClasses(x, y) {
+      const classes = ['letter-tile'];
+
+      if (this.isTileActive(x, y)) {
+        classes.push('letter-tile-selected');
+      }
+
+      if (this.isTileHighlighted(x, y)) {
+        classes.push('letter-tile-highlighted');
+      }
+
+      if (this.isTileAFoundWordTile(x, y)) {
+        classes.push('letter-tile-found');
+      }
+
+      return classes;
+    },
+    wordSelectStart(event) {
+      const touchedElement = event.target.closest('div.letter-tile');
+      if (touchedElement && touchedElement.dataset && touchedElement.dataset.x) {
+        this.selectedRange.start = {
+          x: parseInt(touchedElement.dataset.x, 10),
+          y: parseInt(touchedElement.dataset.y, 10),
+        };
+        return true;
+      }
+      return false;
+    },
+    wordSelectUpdate(event) {
+      // We never started selecting, bail early.
+      if (this.selectedRange.start === undefined) {
+        return false;
+      }
+      let touch = event;
+
+      if (event.type.indexOf('touch') === 0) {
+        touch = event.changedTouches.item(0);
+      }
+
+      const touchedElement = document.elementFromPoint(touch.clientX, touch.clientY).closest('div.letter-tile');
+
+      if (touchedElement && touchedElement.dataset && touchedElement.dataset.x) {
+        const x = parseInt(touchedElement.dataset.x, 10);
+        const y = parseInt(touchedElement.dataset.y, 10);
+
+        const dx = Math.abs(x - this.selectedRange.start.x);
+        const dy = Math.abs(y - this.selectedRange.start.y);
+
+        // Verify the end is valid.
+        // If dy (change in y) or dx (change in x) is zero, then it is horizontal/vertcal == OK.
+        // Or if dx === dy, then it is diagonal.
+        if ((dy === 0 && dx > 0) ||
+            (dx === 0 && dy > 0) ||
+            (dx === dy)) {
+          this.selectedRange.end = { x, y };
+
+          // If it's mouseup, then we finished the dragging a range
+          if (event.type === 'mouseup' || event.type === 'touchend') {
+            console.log(JSON.stringify(this.selectedRange)); // eslint-disable-line no-console
+
+            this.guess = [];
+            // Build guess!
+            const sx = this.selectedRange.start.x;
+            const sy = this.selectedRange.start.y;
+            const ex = this.selectedRange.end.x;
+            const ey = this.selectedRange.end.y;
+
+            if (dx === 0) {
+              // Vertical
+              const step = ey > sy ? 1 : -1;
+              for (let i = sy; step > 0 ? (i <= ey) : (i >= ey); i += step) {
+                this.guess.push({ x: sx, y: i });
+              }
+            } else if (dy === 0) {
+              // Horizontal
+              const step = ex > sx ? 1 : -1;
+              for (let i = sx; step > 0 ? (i <= ex) : (i >= ex); i += step) {
+                this.guess.push({ x: i, y: sy });
+              }
+            } else {
+              // Diagonal
+              const stepX = ex > sx ? 1 : -1;
+              const stepY = ey > sy ? 1 : -1;
+              for (
+                let iX = sx, iY = sy;
+                (stepY > 0 ? (iY <= ey) : (iY >= ey)) || (stepX > 0 ? (iX <= ex) : (iX >= ex));
+                iY += stepY, iX += stepX
+              ) {
+                this.guess.push({ x: iX, y: iY });
+              }
+            }
+
+            if (this.usedWords.indexOf(this.guessedWord) !== -1) {
+              this.foundWords.push(this.guessedWord);
+              this.foundTiles.push(...this.guess);
+            }
+
+
+            // Gesture complete, reset the range.
+            this.resetSelectedRange();
+          }
+        } else if (event.type === 'mouseup' || event.type === 'touchend') {
+          // Verify failed, reset range (only if at the end of a gesture)
+          this.resetSelectedRange();
+        } else {
+          this.selectedRange.end = undefined;
+        }
+      } else if (event.type === 'mouseup' || event.type === 'touchend') {
+        // End was "null" or had no x/y. Reset.
+        this.resetSelectedRange();
+      } else {
+        this.selectedRange.end = undefined;
+      }
+      return true;
+    },
+    resetSelectedRange() {
+      this.selectedRange = {
+        start: undefined,
+        end: undefined,
+      };
+    },
+    gridVal(x, y) {
       if (typeof this.letterGrid[y] !== 'undefined') {
         if (typeof this.letterGrid[y][x] !== 'undefined') {
           return this.letterGrid[y][x];
@@ -85,6 +247,8 @@ export default {
       // Init letterGrid...
       this.letterGrid = [...Array(this.sizeInt)].map(() => Array(this.sizeInt));
       this.usedWords = [];
+      this.foundWords = [];
+      this.foundTiles = [];
 
       // Build letterGrid.
       this.words.forEach((word) => {
@@ -147,7 +311,9 @@ export default {
 
             isValid = true;
           } catch (err) {
-            console.log(`DEBUG: ${err.message}`, word, x, y, dx, dy); // eslint-disable-line no-console
+            if (this.debugEnabled) {
+              console.log(`DEBUG: ${err.message}`, word, x, y, dx, dy); // eslint-disable-line no-console
+            }
             isValid = false;
           }
         } while (!isValid);

@@ -23,12 +23,16 @@ export default {
 
 <style lang="scss">
 $font-family-sans-serif: 'Dosis', 'Helvetica Neue', Arial, sans-serif;
-// $font-weight-light: 200;
-// $font-weight-base: 200;
+$badge-font-size: 1em;
+$badge-font-weight: normal;
+
+$container-max-widths: (
+  md: 720px,
+  lg: 960px,
+  xl: 1140px
+);
 @import './sass/_variables.scss';
-// $border-radius:    0;
-// $border-radius-lg: 0;
-// $border-radius-sm: 0;
+
 @import '../node_modules/bootstrap/scss/bootstrap.scss';
 @import './sass/_bootstrap.scss';
 
