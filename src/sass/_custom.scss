@@ -1,3 +1,6 @@
+.settings-icon {
+  fill: $body-color;
+}
 .letter-tile {
   padding: 100% 0 0;
   cursor: pointer;
@@ -25,14 +28,13 @@
   }
 }
 #wordsearch_grid {
-  min-width: calc(100vw - 50px);
+  min-width: calc(90vw - 50px);
 
   @media screen and (min-width: 100vh) {
-    min-width: calc(100vh - 50px);
+    min-width: calc(90vh - 50px);
   }
   .col {
     padding: 0;
-    max-width: calc( (100vh - 90px) / 8);
 
     &:not(:last-child) {
       border-right-width: 0 !important;
