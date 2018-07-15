@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="row mt-3">
-      <div id="wordsearch_grid" class="col-sm-9 my-1 px-4 pl-sm-5 pr-sm-3">
+      <div id="wordsearch_grid" class="col-auto my-1 px-4 pl-sm-5 pr-sm-3">
         <div class="row" v-for="(_, row) in sizeInt" :key="row">
           <div class="col border" v-for="(_, col) in sizeInt" :key="`${row}_${col}`">
             <div :class="letterTileClasses(col, row)"
@@ -14,14 +14,14 @@
                   @touchmove="wordSelectUpdate"
                   >
               <svg width="100%" height="100%" viewBox="0 0 18 18">
-                <text x="50%" y="15" text-anchor="middle">{{ gridVal(col, row) }}</text>
+                <text x="50%" y="13" text-anchor="middle">{{ gridVal(col, row) }}</text>
               </svg>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="col-sm-3">
+      <div class="col">
         <h2>Words</h2>
         <div class="words">
           <span :class="wordListClasses(word)"

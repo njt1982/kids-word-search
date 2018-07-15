@@ -8,7 +8,6 @@
     line-height: 0;
     width: 100%;
     fill: $body-color;
-    text-transform: uppercase;
   }
 
   transition: background ease-in 0.1s;
@@ -26,8 +25,15 @@
   }
 }
 #wordsearch_grid {
+  min-width: calc(100vw - 50px);
+
+  @media screen and (min-width: 100vh) {
+    min-width: calc(100vh - 50px);
+  }
   .col {
     padding: 0;
+    max-width: calc( (100vh - 90px) / 8);
+
     &:not(:last-child) {
       border-right-width: 0 !important;
     }
