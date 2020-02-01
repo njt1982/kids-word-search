@@ -11,9 +11,9 @@
   },
   "dependencies": {
     "bootstrap": "^4.4",
+    "core-js": "^3.4.4",
     "jquery": "3",
     "popper.js": "^1.14",
-    "core-js": "^3.4.4",
     "vue": "^2.6.10"
   },
   "devDependencies": {
