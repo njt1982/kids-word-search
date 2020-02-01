@@ -2,20 +2,41 @@
   <div id="wrapper">
     <div class="container">
       <div class="row mt-3">
-        <div id="wordsearch_grid" class="col-auto mt-1 mb-4 px-4 pl-sm-5 pr-sm-3 px-md-0 mx-auto">
-          <div class="row justify-content-center" v-for="(_, row) in sizeInt" :key="row">
-            <div class="col border" v-for="(_, col) in sizeInt" :key="`${row}_${col}`">
-              <div :class="letterTileClasses(col, row)"
-                    :data-x="col" :data-y="row"
-                    @mousedown.prevent="wordSelectStart"
-                    @mouseup="wordSelectUpdate"
-                    @mousemove="wordSelectUpdate"
-                    @touchstart.prevent="wordSelectStart"
-                    @touchend="wordSelectUpdate"
-                    @touchmove="wordSelectUpdate"
-                    >
-                <svg width="100%" height="100%" viewBox="0 0 18 18">
-                  <text x="50%" y="13" text-anchor="middle">{{ gridVal(col, row) }}</text>
+        <div
+          id="wordsearch_grid"
+          class="col-auto mt-1 mb-4 px-4 pl-sm-5 pr-sm-3 px-md-0 mx-auto"
+        >
+          <div
+            v-for="(rowV, row) in sizeInt"
+            :key="row-1"
+            class="row justify-content-center"
+          >
+            <div
+              v-for="(colV, col) in sizeInt"
+              :key="`${row}_${col}`"
+              class="col border"
+            >
+              <div
+                :class="letterTileClasses(col, row)"
+                :data-x="col"
+                :data-y="row"
+                @mousedown.prevent="wordSelectStart"
+                @mouseup="wordSelectUpdate"
+                @mousemove="wordSelectUpdate"
+                @touchstart.prevent="wordSelectStart"
+                @touchend="wordSelectUpdate"
+                @touchmove="wordSelectUpdate"
+              >
+                <svg
+                  width="100%"
+                  height="100%"
+                  viewBox="0 0 18 18"
+                >
+                  <text
+                    x="50%"
+                    y="13"
+                    text-anchor="middle"
+                  >{{ gridVal(col, row) }}</text>
                 </svg>
               </div>
             </div>
@@ -25,53 +46,83 @@
         <div class="col mb-5">
           <h2>Words</h2>
           <div class="words">
-            <span :class="wordListClasses(word)"
-                  v-for="word in usedWords"
-                  :key="word">{{word}}</span>
+            <span
+              v-for="word in usedWords"
+              :key="word"
+              :class="wordListClasses(word)"
+            >{{ word }}</span>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="modal fade" id="settings_modal">
-      <div class="modal-dialog" role="document">
+    <div
+      id="settings_modal"
+      class="modal fade"
+    >
+      <div
+        class="modal-dialog"
+        role="document"
+      >
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Settings</h5>
+            <h5 class="modal-title">
+              Settings
+            </h5>
           </div>
           <div class="modal-body">
             <form>
               <label for="words-settings">Words:</label>
 
               <div class="form-group form-inline">
-                <div class="input-group input-group-sm mr-2 mb-2"
-                     v-for="(word, index) in words"
-                     :key="index">
-                  <input type="text"
-                         class="form-control"
-                         v-model.lazy="words[index]" />
+                <div
+                  v-for="(word, index) in words"
+                  :key="index"
+                  class="input-group input-group-sm mr-2 mb-2"
+                >
+                  <input
+                    v-model.lazy="words[index]"
+                    type="text"
+                    class="form-control"
+                  >
                   <div class="input-group-append">
-                    <div class="btn btn-danger" @click="removeWord(index)">-</div>
+                    <div
+                      class="btn btn-danger"
+                      @click="removeWord(index)"
+                    >
+                      -
+                    </div>
                   </div>
                 </div>
 
-                <div class="btn btn-success btn-sm mr-2 mb-2" @click="addWord()">+</div>
+                <div
+                  class="btn btn-success btn-sm mr-2 mb-2"
+                  @click="addWord()"
+                >
+                  +
+                </div>
               </div>
 
               <label for="size-settings">Size:</label>
               <div class="form-group">
-                <input type="number"
-                       v-model.lazy="size"
-                       name="size-settings"
-                       class="form-control-sm" />
+                <input
+                  v-model.lazy="size"
+                  type="number"
+                  name="size-settings"
+                  class="form-control-sm"
+                >
               </div>
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button"
-                    class="btn btn-primary"
-                    data-dismiss="modal"
-                    @click="rebuildGrid()">Save changes</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-dismiss="modal"
+              @click="rebuildGrid()"
+            >
+              Save changes
+            </button>
           </div>
         </div>
       </div>
@@ -104,9 +155,6 @@ export default {
       },
     };
   },
-  mounted() {
-    this.rebuildGrid();
-  },
   computed: {
     sizeInt() {
       return parseInt(this.size, 10);
@@ -114,6 +162,9 @@ export default {
     guessedWord() {
       return this.guess.map(l => this.gridVal(l.x, l.y)).join('');
     },
+  },
+  mounted() {
+    this.rebuildGrid();
   },
   methods: {
     removeWord(index) {
