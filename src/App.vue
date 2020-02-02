@@ -22,7 +22,7 @@ export default {
 </script>
 
 <style lang="scss">
-$font-family-sans-serif: 'Dosis', 'Helvetica Neue', Arial, sans-serif;
+$font-family-sans-serif: 'Ruluko', sans-serif;
 $badge-font-size: 1em;
 $badge-font-weight: normal;
 

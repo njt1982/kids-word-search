@@ -4,17 +4,14 @@
       <div class="row mt-3">
         <div
           id="wordsearch_grid"
-          class="col-auto mt-1 mb-4 px-4 pl-sm-5 pr-sm-3 px-md-0 mx-auto"
         >
           <div
             v-for="(rowV, row) in sizeInt"
             :key="row-1"
-            class="row justify-content-center"
           >
             <div
               v-for="(colV, col) in sizeInt"
               :key="`${row}_${col}`"
-              class="col border"
             >
               <div
                 :class="letterTileClasses(col, row)"
@@ -39,6 +36,11 @@
                   >{{ gridVal(col, row) }}</text>
                 </svg>
               </div>
+              <div
+                v-for="(wordLineData, wordLineIndex) in wordLinesForTile(col, row)"
+                :key="`${row}_${col}_${wordLineIndex}`"
+                :class="wordLineClasses(wordLineData)"
+              />
             </div>
           </div>
         </div>
@@ -72,54 +74,83 @@
           </div>
           <div class="modal-body">
             <form>
-              <label for="words-settings">Words:</label>
+              <div class="row">
+                <label
+                  for="words-settings"
+                  class="col-4"
+                >Words:</label>
 
-              <div class="form-group form-inline">
-                <div
-                  v-for="(word, index) in words"
-                  :key="index"
-                  class="input-group input-group-sm mr-2 mb-2"
-                >
-                  <input
-                    v-model.lazy="words[index]"
-                    type="text"
-                    class="form-control"
+                <div class="form-group form-inline col-8 row">
+                  <div
+                    v-for="(word, index) in words"
+                    :key="index"
+                    class="input-group input-group-sm mb-2 col-6"
                   >
-                  <div class="input-group-append">
-                    <div
-                      class="btn btn-danger"
-                      @click="removeWord(index)"
+                    <input
+                      v-model.lazy="words[index]"
+                      type="text"
+                      class="form-control"
                     >
-                      -
+                    <div class="input-group-append">
+                      <div
+                        class="btn btn-danger"
+                        @click="removeWord(index)"
+                      >
+                        -
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class=" mb-2 col">
+                    <div
+                      class="btn btn-success btn-sm"
+                      @click="addWord()"
+                    >
+                      +
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <div
-                  class="btn btn-success btn-sm mr-2 mb-2"
-                  @click="addWord()"
-                >
-                  +
+              <div class="row">
+                <label
+                  for="size-settings"
+                  class="col-4"
+                >Size:</label>
+                <div class="col">
+                  <input
+                    id="size-settings"
+                    v-model.lazy="size"
+                    type="number"
+                    name="size-settings"
+                    class="form-control-sm"
+                  >
                 </div>
               </div>
 
-              <label for="size-settings">Size:</label>
-              <div class="form-group">
-                <input
-                  v-model.lazy="size"
-                  type="number"
-                  name="size-settings"
-                  class="form-control-sm"
-                >
+              <div class="row">
+                <label
+                  class="col-4"
+                  for="backwards-settings"
+                >Allow backwards?</label>
+                <div class="col">
+                  <input
+                    id="backwards-settings"
+                    v-model.lazy="backwards"
+                    type="checkbox"
+                    name="backwards-settings"
+                  >
+                </div>
               </div>
             </form>
           </div>
+
           <div class="modal-footer">
             <button
               type="button"
               class="btn btn-primary"
               data-dismiss="modal"
-              @click="rebuildGrid()"
+              @click="saveSettings()"
             >
               Save changes
             </button>
@@ -131,23 +162,25 @@
 </template>
 
 <script>
+const SYNCABLE_KEYS = {
+  backwards : { type: Boolean, default: false } ,
+  words: { type: Array, default: ['air', 'bare', 'dare', 'summer', 'scared'] },
+  size: { type: Number, default: 8 }
+}
+
 export default {
   name: 'Helper',
   data() {
     return {
       debugEnabled: false,
       size: 8,
-      words: [
-        'air',
-        'bare',
-        'dare',
-        'summer',
-        'scared',
-      ],
+      words: [],
+      backwards: false,
       usedWords: [],
       foundWords: [],
       letterGrid: [[]],
       foundTiles: [],
+      wordLines: [],
       guess: [],
       selectedRange: {
         start: undefined,
@@ -163,10 +196,63 @@ export default {
       return this.guess.map(l => this.gridVal(l.x, l.y)).join('');
     },
   },
+  watch: {
+    backwards: function() {
+      this.syncConfigToUrl()
+    },
+    words: function() {
+      this.syncConfigToUrl()
+    },
+    size: function() {
+      this.syncConfigToUrl()
+    }
+  },
   mounted() {
+    this.syncConfigFromUrl();
     this.rebuildGrid();
   },
   methods: {
+    syncConfigFromUrl() {
+      var searchParams = new URLSearchParams(window.location.search)
+      Object.keys(SYNCABLE_KEYS).forEach(key => {
+        var value
+        if (SYNCABLE_KEYS[key].type === Array) {
+          value = searchParams.getAll(key)
+          if (value.length === 0) {
+            value = SYNCABLE_KEYS[key].default
+          }
+        } else {
+          value = searchParams.get(key)
+          if (value === null) {
+            value = SYNCABLE_KEYS[key].default
+          }
+          value = new SYNCABLE_KEYS[key].type(value).valueOf()
+        }
+        this[key] = value
+      })
+    },
+    syncConfigToUrl() {
+      var searchParams = new URLSearchParams(window.location.search)
+      Object.keys(SYNCABLE_KEYS).forEach(key => {
+        searchParams.delete(key);
+        const value = this[key]
+        if (SYNCABLE_KEYS[key].type === Array) {
+          if (value != SYNCABLE_KEYS[key].default) {
+            value.forEach(valueItem => searchParams.append(key, valueItem))
+          }
+        } else {
+          if (value != SYNCABLE_KEYS[key].default) {
+            searchParams.set(key, value);
+          }
+        }
+      })
+      var newRelativePathQuery = window.location.pathname + '?' + searchParams.toString();
+      history.pushState(null, '', newRelativePathQuery);
+    },
+    saveSettings() {
+      this.syncConfigToUrl()
+      this.rebuildGrid()
+    },
     removeWord(index) {
       this.words.splice(index, 1);
     },
@@ -234,6 +320,21 @@ export default {
 
       return classes;
     },
+    wordLinesForTile(x, y) {
+      return this.wordLines.filter(wordLine => (wordLine.x === x) && (wordLine.y === y))
+    },
+    wordLineClasses(wordLine) {
+      const classes = [
+        'word-strike',
+        'word-strike-direction-' + wordLine.direction,
+        'word-strike-length-' + wordLine.length,
+      ]
+      // Odd directions are diagonal
+      if (wordLine.direction % 2 === 1) {
+        classes.push('word-strike-diagonal')
+      }
+      return classes;
+    },
     wordSelectStart(event) {
       const touchedElement = event.target.closest('div.letter-tile');
       if (touchedElement && touchedElement.dataset && touchedElement.dataset.x) {
@@ -284,18 +385,24 @@ export default {
             const ex = this.selectedRange.end.x;
             const ey = this.selectedRange.end.y;
 
+            // 0 = up, 1 = up-right, 2 = right, 3 = down-right, 4 = down
+            // 5 = down-left, 6 = left, 7 = up-left
+            var direction = 0
+
             if (dx === 0) {
               // Vertical
               const step = ey > sy ? 1 : -1;
               for (let i = sy; step > 0 ? (i <= ey) : (i >= ey); i += step) {
                 this.guess.push({ x: sx, y: i });
               }
+              direction = step > 0 ? 4 : 0
             } else if (dy === 0) {
               // Horizontal
               const step = ex > sx ? 1 : -1;
               for (let i = sx; step > 0 ? (i <= ex) : (i >= ex); i += step) {
                 this.guess.push({ x: i, y: sy });
               }
+              direction = step > 0 ? 2 : 7
             } else {
               // Diagonal
               const stepX = ex > sx ? 1 : -1;
@@ -307,11 +414,25 @@ export default {
               ) {
                 this.guess.push({ x: iX, y: iY });
               }
+              direction = stepX > 0
+                ? stepY > 0 ? 3 : 1
+                : stepY > 0 ? 5 : 7
+
             }
 
             if (this.usedWords.indexOf(this.guessedWord) !== -1) {
               this.foundWords.push(this.guessedWord);
               this.foundTiles.push(...this.guess);
+              const newWordLine = {
+                x: sx,
+                y: sy,
+                length: this.guessedWord.length,
+                direction
+              }
+              this.wordLines.push(newWordLine)
+              if (this.debugEnabled) {
+                console.log('Found Word:', this.guessedWord, sx, sy, newWordLine); // eslint-disable-line no-console
+              }
             }
 
 
@@ -353,6 +474,7 @@ export default {
       this.foundWords = [];
       this.foundTiles = [];
       this.guess = [];
+      this.wordLines = [];
 
       // Build letterGrid.
       this.words.forEach((word) => {
@@ -380,12 +502,23 @@ export default {
           dy = 0;
           isValid = false; // Assume invalid until proven OK.
 
-          const direction = Math.floor(Math.random() * 8);
+          // Directions...
+          // 0 = up, 1 = up-right, 2 = right, 3 = down-right, 4 = down
+          // 5 = down-left, 6 = left, 7 = up-left
+
+          // If Backwards is enabled, can have the full 0-7 range.
+          // Othewrwise, can only got 1-4
+          const direction = this.backwards
+            ? Math.floor(Math.random() * 8)
+            : 1 + Math.floor(Math.random() * 4);
+
+          // 1-3 goes right. 5-7 goes left
           if (direction > 0 && direction < 4) {
             dx = 1;
           } else if (direction > 4 && direction < 8) {
             dx = -1;
           }
+          // 0-1 and 7  go up. 3-5 go down.
           if (direction < 2 || direction > 6) {
             dy = -1;
           } else if (direction > 2 && direction < 6) {
@@ -431,7 +564,7 @@ export default {
         }
       });
 
-      // Now fille in the rest of the grid.
+      // Now fill in the rest of the grid.
       const alphabet = 'abcdefghijklmnopqrstuvwxyz';
       for (let y = 0; y < this.sizeInt; y += 1) {
         for (let x = 0; x < this.sizeInt; x += 1) {
@@ -441,6 +574,6 @@ export default {
         }
       }
     },
-  },
+  }
 };
 </script>
