@@ -266,14 +266,6 @@ export default {
       }
       return classes;
     },
-    isTileActive(x, y) {
-      for (let i = 0; i < this.guess.length; i += 1) {
-        if (this.guess[i].x === x && this.guess[i].y === y) {
-          return true;
-        }
-      }
-      return false;
-    },
     isTileHighlighted(x, y) {
       if (this.selectedRange.start && this.selectedRange.end) {
         const r = this.selectedRange;
@@ -305,10 +297,6 @@ export default {
     },
     letterTileClasses(x, y) {
       const classes = ['letter-tile'];
-
-      if (this.isTileActive(x, y)) {
-        classes.push('letter-tile-selected');
-      }
 
       if (this.isTileHighlighted(x, y)) {
         classes.push('letter-tile-highlighted');
