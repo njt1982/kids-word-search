@@ -54,6 +54,27 @@
               :class="wordListClasses(word)"
             >{{ word }}</span>
           </div>
+
+          <h2 class="mt-4">
+            Timer
+          </h2>
+          <span>{{ displayTime }}</span>
+
+          <h2 class="mt-4">
+            Game
+          </h2>
+          <div
+            class="btn btn-primary mb-2"
+            @click="rebuildGrid()"
+          >
+            New Game
+          </div>
+          <div
+            class="btn btn-primary mb-2"
+            @click="clearGameState()"
+          >
+            Restart this game
+          </div>
         </div>
       </div>
     </div>
@@ -186,6 +207,8 @@ export default {
         start: undefined,
         end: undefined,
       },
+      startTime: 0,
+      displayTime: ''
     };
   },
   computed: {
@@ -210,6 +233,9 @@ export default {
   mounted() {
     this.syncConfigFromUrl();
     this.rebuildGrid();
+    setInterval(function() {
+      this.generateDisplayTime()
+    }.bind(this), 1000);
   },
   methods: {
     syncConfigFromUrl() {
@@ -252,6 +278,10 @@ export default {
     saveSettings() {
       this.syncConfigToUrl()
       this.rebuildGrid()
+    },
+    generateDisplayTime() {
+      const duration = (Date.now() - this.startTime) / 1000
+      this.displayTime = `${Math.floor(duration / 60)}m ${Math.floor(duration % 60)}s`
     },
     removeWord(index) {
       this.words.splice(index, 1);
@@ -455,14 +485,19 @@ export default {
       }
       return '';
     },
+    clearGameState() {
+      this.foundWords = []
+      this.foundTiles = []
+      this.guess = []
+      this.wordLines = []
+      this.startTime = Date.now()
+      this.generateDisplayTime()
+    },
     rebuildGrid() {
       // Init letterGrid...
-      this.letterGrid = [...Array(this.sizeInt)].map(() => Array(this.sizeInt));
-      this.usedWords = [];
-      this.foundWords = [];
-      this.foundTiles = [];
-      this.guess = [];
-      this.wordLines = [];
+      this.letterGrid = [...Array(this.sizeInt)].map(() => Array(this.sizeInt))
+      this.usedWords = []
+      this.clearGameState()
 
       // Build letterGrid.
       this.words.forEach((word) => {
