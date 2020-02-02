@@ -4,7 +4,7 @@
       <div class="row">
         <a
           class="navbar-brand"
-          href="/kids-word-search/"
+          :href="baseUrl"
           title="Word Search Game"
         >Word Search Game</a>
 
@@ -41,5 +41,10 @@
 <script>
 export default {
   name: 'Header',
+  data() {
+    return {
+      baseUrl: process.env.BASE_URL
+    }
+  }
 };
 </script>
