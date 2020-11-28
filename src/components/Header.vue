@@ -32,6 +32,18 @@
               </svg>
             </a>
           </li>
+          <li class="nav-item">
+            <a
+              id="github-logo"
+              class="nav-link"
+              href="https://github.com/njt1982/kids-word-search"
+              target="_blank"
+            >
+              <img
+                :src="baseUrl + 'GitHub-Mark-Light-120px-plus.png'"
+              >
+            </a>
+          </li>
         </ul>
       </div>
     </div>

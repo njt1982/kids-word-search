@@ -1,3 +1,15 @@
+#github-logo {
+  img {
+    width: 20px;
+    height: 20px;
+    opacity: 66.66%;
+  }
+  &:hover {
+    img {
+      opacity: 100%;
+    }
+  }
+}
 .settings-icon {
   fill: $body-color;
 }

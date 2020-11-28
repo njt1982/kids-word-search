@@ -64,13 +64,13 @@
             Game
           </h2>
           <div
-            class="btn btn-primary mb-2"
+            class="btn btn-primary mb-2 d-block"
             @click="rebuildGrid()"
           >
             New Game
           </div>
           <div
-            class="btn btn-primary mb-2"
+            class="btn btn-primary mb-2 d-block"
             @click="clearGameState()"
           >
             Restart this game
