@@ -33,7 +33,7 @@ $container-max-widths: (
 );
 @import './sass/_variables.scss';
 
-@import '../node_modules/bootstrap/scss/bootstrap.scss';
+@import '~bootstrap/scss/bootstrap.scss';
 @import './sass/_bootstrap.scss';
 
 @import './sass/_custom.scss';
