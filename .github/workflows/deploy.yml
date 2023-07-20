@@ -12,20 +12,24 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+
     - name: Setup Node
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: '14'
+
     - name: Install
-      uses: borales/actions-yarn@v4
+      uses: borales/actions-yarn@v4.2.0
       with:
         cmd: install
+
     - name: Build
-      uses: borales/actions-yarn@4
+      uses: borales/actions-yarn@v4.2.0
       with:
         cmd: build
+
     - name: Deploy
-      uses: JamesIves/github-pages-deploy-action@v4.4.1
+      uses: JamesIves/github-pages-deploy-action@v4.4.3
       with:
         ssh-key: ${{ secrets.DEPLOY_KEY }}
         branch: gh-pages
