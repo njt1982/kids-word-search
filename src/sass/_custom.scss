@@ -16,6 +16,7 @@
 .letter-tile {
   padding: 100% 0 0;
   cursor: pointer;
+
   svg {
     position: absolute;
     left: 0;
@@ -27,7 +28,7 @@
 
   transition: background ease-in 0.1s;
   &:hover {
-    background: rgba(255,255,255, 0.1);
+    background: rgba(255, 255, 255, 0.1);
   }
   &.letter-tile-found {
     background: rgba(0, 255, 0, 0.3);
@@ -48,36 +49,27 @@
   box-shadow: 0 0 7px #fff;
   transform-origin: 0 0;
 
-  @for $i from 0 to 7 {
-    &.word-strike-direction-#{$i} { transform: rotate((($i * 45deg) - 90deg)); }
+  @for $i from 0 to 8 {
+    &.word-strike-direction-#{$i} {
+      transform: rotate((($i * 45deg) - 90deg));
+    }
   }
   @for $i from 0 to 20 {
-    &:not(.word-strike-diagonal).word-strike-length-#{$i} { width: ($i - 1) * 100%; }
-    &.word-strike-diagonal.word-strike-length-#{$i} { width: ($i - 1) * 100% * 1.414214; } // 1.414214 is a hypothenuse multiplier
+    &:not(.word-strike-diagonal).word-strike-length-#{$i} {
+      width: ($i - 1) * 100%;
+    }
+    &.word-strike-diagonal.word-strike-length-#{$i} {
+      width: ($i - 1) * 100% * 1.414214;
+    } // 1.414214 is a hypothenuse multiplier
   }
 }
 #wordsearch_grid {
-  @extend .col-auto;
-  @extend .mt-1;
-  @extend .mb-4;
-  @extend .px-4;
-  @extend .pl-sm-5;
-  @extend .pr-sm-3;
-  @extend .px-md-0;
-  @extend .mx-auto;
-  min-width: calc(90vw - 50px);
-
-  @media screen and (min-width: 100vh) {
-    min-width: calc(90vh - 50px);
-  }
+  min-width: min(800px, calc(90vh - 50px));
 
   > div {
-    @extend .d-flex;
-    @extend .justify-content-center;
     > div {
-      @extend .col;
-      @extend .border;
       padding: 0;
+      position: relative;
 
       &:not(:last-child) {
         border-right-width: 0 !important;

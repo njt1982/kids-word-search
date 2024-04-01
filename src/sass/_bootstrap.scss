@@ -1,16 +1,20 @@
 // Slate 4.1.1
 // Bootswatch
 
-
 // Variables ===================================================================
 
-@mixin btn-shadow($color){
+@mixin btn-shadow($color) {
   @include gradient-y-three-colors(lighten($color, 6%), $color, 60%, darken($color, 4%));
   filter: none;
 }
 
-@mixin btn-shadow-inverse($color){
-  @include gradient-y-three-colors(darken($color, 18%), darken($color, 15%), 40%, darken($color, 13%));
+@mixin btn-shadow-inverse($color) {
+  @include gradient-y-three-colors(
+    darken($color, 18%),
+    darken($color, 15%),
+    40%,
+    darken($color, 13%)
+  );
   filter: none;
 }
 
@@ -200,7 +204,6 @@
 
 .btn-group,
 .btn-group-vertical {
-
   .btn.active {
     border-color: rgba(0, 0, 0, 0.6);
   }
@@ -208,7 +211,12 @@
 
 // Typography ==================================================================
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.3);
 }
 
@@ -224,61 +232,74 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .table {
-
   .thead-dark th {
     color: $white;
   }
 
   &-success {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $success;
     }
   }
 
   &-info {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $info;
     }
   }
 
   &-danger {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $danger;
     }
   }
 
   &-warning {
-    &, > th, > td {
+    &,
+    > th,
+    > td {
       background-color: $warning;
     }
   }
 
   &-hover {
-
     .table-success:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($success, 5%);
       }
     }
 
     .table-info:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($info, 5%);
       }
     }
 
     .table-danger:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($danger, 5%);
       }
     }
 
     .table-warning:hover {
-      &, > th, > td {
+      &,
+      > th,
+      > td {
         background-color: darken($warning, 5%);
       }
     }
-
   }
 }
 
@@ -297,7 +318,6 @@ legend {
 // Navs ========================================================================
 
 .nav-tabs {
-
   .nav-link,
   .nav-link:hover {
     color: #fff;
@@ -305,7 +325,6 @@ legend {
 }
 
 .nav-pills {
-
   .nav-link {
     @include btn-shadow($gray-800);
     border: 1px solid rgba(0, 0, 0, 0.6);
@@ -333,7 +352,6 @@ legend {
 }
 
 .pagination {
-
   .page-link {
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
     @include btn-shadow($gray-800);
@@ -368,9 +386,8 @@ legend {
 // Indicators ==================================================================
 
 .alert {
-
   .close {
-    color: $close-color;
+    color: $black;
     text-decoration: none;
   }
 }
@@ -401,7 +418,6 @@ legend {
 }
 
 .badge {
-
   &-success,
   &-warning,
   &-info {
@@ -418,7 +434,6 @@ legend {
 }
 
 .list-group {
-
   &-item:hover {
     background-color: darken($gray-900, 5%);
   }

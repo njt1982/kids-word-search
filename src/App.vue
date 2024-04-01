@@ -1,41 +1,15 @@
-<template>
-  <div id="app">
-    <Header />
-    <Helper />
-  </div>
-</template>
+<script setup>
+import 'bootstrap'
 
-<script>
-import 'popper.js';
-import 'bootstrap';
-
-import Helper from './components/Helper';
-import Header from './components/Header';
-
-export default {
-  name: 'App',
-  components: {
-    Helper,
-    Header,
-  },
-};
+import GameWrapper from './components/GameWrapper.vue'
+import GameHeader from './components/GameHeader.vue'
 </script>
 
+<template>
+  <GameHeader />
+  <GameWrapper />
+</template>
+
 <style lang="scss">
-$font-family-sans-serif: 'Ruluko', sans-serif;
-$badge-font-size: 1em;
-$badge-font-weight: normal;
-
-$container-max-widths: (
-  md: 720px,
-  lg: 960px,
-  xl: 1140px
-);
-@import './sass/_variables.scss';
-
-@import '~bootstrap/scss/bootstrap.scss';
-@import './sass/_bootstrap.scss';
-
-@import './sass/_custom.scss';
-
+@import './sass/style.scss';
 </style>
