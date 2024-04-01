@@ -11,27 +11,22 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: '14'
+        node-version-file: '.nvmrc'
+        cache: 'npm'
+        cache-dependency-path: 'package-lock.json'
 
     - name: Install
-      uses: borales/actions-yarn@v4.2.0
-      with:
-        cmd: install
+      run: npm ci
 
     - name: Build
-      uses: borales/actions-yarn@v4.2.0
-      with:
-        cmd: build
+      run: npm run build
 
     - name: Deploy
-      uses: JamesIves/github-pages-deploy-action@v4.4.3
+      uses: JamesIves/github-pages-deploy-action@v4
       with:
-        ssh-key: ${{ secrets.DEPLOY_KEY }}
-        branch: gh-pages
         folder: 'dist'
-        clean: true
