@@ -1,0 +1,17 @@
+$font-family-sans-serif: 'Ruluko', sans-serif;
+$badge-font-size: 1em;
+$badge-font-weight: normal;
+
+$container-max-widths: (
+  md: 720px,
+  lg: 960px,
+  xl: 1140px
+);
+
+@import '_variables.scss';
+
+@import 'node_modules/bootstrap/scss/bootstrap';
+
+@import '_bootstrap.scss';
+
+@import '_custom.scss';

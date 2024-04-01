@@ -1,41 +1,18 @@
-<template>
-  <div id="app">
-    <Header />
-    <Helper />
-  </div>
-</template>
-
-<script>
-import 'popper.js';
+<script setup>
+// import 'popper.js';
 import 'bootstrap';
 
-import Helper from './components/Helper';
-import Header from './components/Header';
+import Helper from './components/Helper.vue';
+import Header from './components/Header.vue';
 
-export default {
-  name: 'App',
-  components: {
-    Helper,
-    Header,
-  },
-};
 </script>
 
+<template>
+  <Header />
+  <Helper />
+</template>
+
+
 <style lang="scss">
-$font-family-sans-serif: 'Ruluko', sans-serif;
-$badge-font-size: 1em;
-$badge-font-weight: normal;
-
-$container-max-widths: (
-  md: 720px,
-  lg: 960px,
-  xl: 1140px
-);
-@import './sass/_variables.scss';
-
-@import '~bootstrap/scss/bootstrap.scss';
-@import './sass/_bootstrap.scss';
-
-@import './sass/_custom.scss';
-
+@import './sass/style.scss';
 </style>

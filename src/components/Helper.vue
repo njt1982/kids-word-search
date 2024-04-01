@@ -2,14 +2,14 @@
   <div id="wrapper">
     <div class="container">
       <div class="row mt-3">
-        <div
-          id="wordsearch_grid"
-        >
+        <div class="col-auto mt-1 mb-4 px-4 ps-sm-5 pe-sm-3 px-md-0 mx-auto" id="wordsearch_grid">
           <div
+            class="d-flex justify-content-center"
             v-for="(rowV, row) in sizeInt"
             :key="row-1"
           >
             <div
+              class="col border"
               v-for="(colV, col) in sizeInt"
               :key="`${row}_${col}`"
             >
@@ -95,7 +95,7 @@
           </div>
           <div class="modal-body">
             <form>
-              <div class="row">
+              <div class="row mb-2">
                 <label
                   for="words-settings"
                   class="col-4"
@@ -105,20 +105,18 @@
                   <div
                     v-for="(word, index) in words"
                     :key="index"
-                    class="input-group input-group-sm mb-2 col-6"
+                    class="input-group input-group-sm mb-2"
                   >
                     <input
                       v-model.lazy="words[index]"
                       type="text"
                       class="form-control"
                     >
-                    <div class="input-group-append">
-                      <div
-                        class="btn btn-danger"
-                        @click="removeWord(index)"
-                      >
-                        -
-                      </div>
+                    <div
+                      class="btn btn-outline-danger border-light"
+                      @click="removeWord(index)"
+                    >
+                      -
                     </div>
                   </div>
 
@@ -127,17 +125,17 @@
                       class="btn btn-success btn-sm"
                       @click="addWord()"
                     >
-                      +
+                      Add Word
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div class="row">
+              <div class="row mb-2">
                 <label
                   for="size-settings"
                   class="col-4"
-                >Size:</label>
+                >Grid Size:</label>
                 <div class="col">
                   <input
                     id="size-settings"
@@ -149,17 +147,18 @@
                 </div>
               </div>
 
-              <div class="row">
+              <div class="row mb-2">
                 <label
-                  class="col-4"
+                  class="col-4 form-check-label"
                   for="backwards-settings"
-                >Allow backwards?</label>
+                >Allow reversed words?</label>
                 <div class="col">
                   <input
                     id="backwards-settings"
                     v-model.lazy="backwards"
                     type="checkbox"
                     name="backwards-settings"
+                    class="form-check-input"
                   >
                 </div>
               </div>
@@ -170,7 +169,7 @@
             <button
               type="button"
               class="btn btn-primary"
-              data-dismiss="modal"
+              data-bs-dismiss="modal"
               @click="saveSettings()"
             >
               Save changes
@@ -290,9 +289,9 @@ export default {
       this.words.push('');
     },
     wordListClasses(word) {
-      const classes = ['badge', 'badge-pill', 'badge-primary'];
+      const classes = ['badge', 'rounded-pill', 'text-bg-primary'];
       if (this.foundWords.indexOf(word) !== -1) {
-        classes.push('badge-success');
+        classes.push('text-bg-success');
       }
       return classes;
     },
