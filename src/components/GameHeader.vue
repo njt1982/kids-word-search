@@ -28,7 +28,7 @@
             href="https://github.com/njt1982/kids-word-search"
             target="_blank"
           >
-            <img src="/kids-word-search/GitHub-Mark-Light-120px-plus.png" />
+            <img src="/GitHub-Mark-Light-120px-plus.png" />
           </a>
         </li>
       </ul>
