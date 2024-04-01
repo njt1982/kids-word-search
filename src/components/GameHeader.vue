@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-primary">
     <div class="container">
-      <a class="navbar-brand" :href="baseUrl" title="Word Search Game">Word Search Game</a>
+      <a class="navbar-brand" href="/kids-word-search/" title="Word Search Game">Word Search Game</a>
 
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
