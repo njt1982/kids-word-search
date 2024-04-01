@@ -1,15 +1,13 @@
 <script setup>
-// import 'popper.js';
 import 'bootstrap';
 
-import Helper from './components/Helper.vue';
-import Header from './components/Header.vue';
-
+import GameWrapper from './components/GameWrapper.vue';
+import GameHeader from './components/GameHeader.vue';
 </script>
 
 <template>
-  <Header />
-  <Helper />
+  <GameHeader />
+  <GameWrapper />
 </template>
 
 

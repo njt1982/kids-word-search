@@ -142,7 +142,7 @@
                     v-model.lazy="size"
                     type="number"
                     name="size-settings"
-                    class="form-control-sm"
+                    class="form-control form-control-sm"
                   >
                 </div>
               </div>
@@ -189,7 +189,7 @@ const SYNCABLE_KEYS = {
 }
 
 export default {
-  name: 'Helper',
+  name: 'GameWrapper',
   data() {
     return {
       debugEnabled: false,
